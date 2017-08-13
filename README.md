@@ -6,4 +6,4 @@
 
 This is a simple program to rotate the display and input based on the output of the "monitor-sensors" command. It was written and tested on Ubuntu with a Dell Latitude 7275.
 
-Also it doesn't work yet... I'll update the readme when I finish it.
+Also it doesn't work perfectly yet. The screen rotates, but the touch input does not. I'll update the readme when that's fixed.

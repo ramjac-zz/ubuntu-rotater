@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bufio"
 	"context"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"os/exec"
 	"os/signal"
+	"strings"
 )
 
 func main() {
@@ -41,11 +43,50 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if out, err := ioutil.ReadAll(stdout); err != nil {
-		log.Fatal(err)
-	} else {
-		log.Println(string(out))
-	}
+	go func() {
+		buf := bufio.NewReader(stdout)
+		for {
+			if out, _, err := buf.ReadLine(); err != nil {
+				if err == io.EOF {
+					log.Println("Done reading")
+					break
+				}
+				log.Fatal(err)
+			} else {
+				log.Println(string(out))
+				parsed := string(out)
+
+				// If we can't find a colon, this isn't a line we're looking for
+				if len(strings.Split(parsed, ":")) <= 1 {
+					continue
+				}
+
+				// clean up the orientation
+				parsed = strings.Split(parsed, ":")[1]
+				parsed = strings.Replace(parsed, ")", "", -1)
+				parsed = strings.TrimSpace(parsed)
+				// Now parse the line and do something with it
+				switch parsed {
+				case "normal":
+					//xrandr -o normal
+					tmp := exec.Command("xrandr", "-o", "normal")
+					tmp.Run()
+				case "bottom-up":
+					//xrandr -o inverted
+					tmp := exec.Command("xrandr", "-o", "inverted")
+					tmp.Run()
+				case "left-up":
+					//xrandr -o left
+					tmp := exec.Command("xrandr", "-o", "left")
+					tmp.Run()
+				case "right-up":
+					//xrandr -o right
+					tmp := exec.Command("xrandr", "-o", "right")
+					tmp.Run()
+				}
+			}
+		}
+	}()
 
 	if err := ms.Wait(); err != nil {
 		log.Fatal(err)
