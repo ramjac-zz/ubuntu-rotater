@@ -65,24 +65,33 @@ func main() {
 				parsed = strings.Split(parsed, ":")[1]
 				parsed = strings.Replace(parsed, ")", "", -1)
 				parsed = strings.TrimSpace(parsed)
+
+				penstylus := "Wacom HID 4822 Pen stylus"
+				peneraser := "Wacom HID 4822 Pen eraser"
+				fingertouch := "Wacom HID 4822 Finger touch"
+
 				// Now parse the line and do something with it
 				switch parsed {
 				case "normal":
-					//xrandr -o normal
-					tmp := exec.Command("xrandr", "-o", "normal")
-					tmp.Run()
+					setXrandr("normal")
+					setXwacom(penstylus, "none")
+					setXwacom(peneraser, "none")
+					setXwacom(fingertouch, "none")
 				case "bottom-up":
-					//xrandr -o inverted
-					tmp := exec.Command("xrandr", "-o", "inverted")
-					tmp.Run()
+					setXrandr("inverted")
+					setXwacom(penstylus, "half")
+					setXwacom(peneraser, "half")
+					setXwacom(fingertouch, "half")
 				case "left-up":
-					//xrandr -o left
-					tmp := exec.Command("xrandr", "-o", "left")
-					tmp.Run()
+					setXrandr("left")
+					setXwacom(penstylus, "ccw")
+					setXwacom(fingertouch, "ccw")
+					setXwacom(fingertouch, "ccw")
 				case "right-up":
-					//xrandr -o right
-					tmp := exec.Command("xrandr", "-o", "right")
-					tmp.Run()
+					setXrandr("right")
+					setXwacom(penstylus, "cw")
+					setXwacom(peneraser, "cw")
+					setXwacom(fingertouch, "cw")
 				}
 			}
 		}
@@ -92,6 +101,22 @@ func main() {
 		log.Fatal(err)
 	}
 }
+
+func setXrandr(dir string) {
+	tmp := exec.Command("xrandr", "-o", dir)
+	tmp.Run()
+}
+func setXwacom(dev, dir string) {
+	tmp := exec.Command("xsetwacom", "set", dev, "rotate", dir)
+	tmp.Run()
+}
+
+/* Example of xsetwacom output
+xsetwacom --list devices
+Wacom HID 4822 Pen stylus               id: 11  type: STYLUS
+Wacom HID 4822 Finger touch             id: 12  type: TOUCH
+Wacom HID 4822 Pen eraser               id: 18  type: ERASER
+*/
 
 /* an example of some output from monitor-sensors
 Has accelerometer (orientation: normal)
