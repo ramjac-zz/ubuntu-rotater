@@ -104,11 +104,15 @@ func main() {
 
 func setXrandr(dir string) {
 	tmp := exec.Command("xrandr", "-o", dir)
-	tmp.Run()
+	if err:=tmp.Run(); err !=nil{
+		log.Println(err)
+	}
 }
 func setXwacom(dev, dir string) {
 	tmp := exec.Command("xsetwacom", "set", dev, "rotate", dir)
-	tmp.Run()
+	if err:=tmp.Run(); err !=nil{
+		log.Println(err)
+	}
 }
 
 /* Example of xsetwacom output
